@@ -1,0 +1,6 @@
+BEGIN 
+FOR NUM IN 0 .. 10 LOOP
+DBMS_OUTPUT.PUT_LINE(NUM);
+END LOOP;
+END;
+--no need of implementation
