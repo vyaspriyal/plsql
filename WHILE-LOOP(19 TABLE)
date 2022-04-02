@@ -1,0 +1,8 @@
+DECLARE 
+num NUMBER:= 1;
+BEGIN
+WHILE num<=10 LOOP
+DBMS_OUTPUT.PUT_LINE(19 || ' x ' || num ||' = '|| 19*num);
+num := num + 1;
+END LOOP;
+END;
