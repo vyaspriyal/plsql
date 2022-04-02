@@ -1,0 +1,8 @@
+
+BEGIN 
+FOR NUM IN  reverse 0 .. 10 LOOP
+DBMS_OUTPUT.PUT_LINE(NUM);
+END LOOP;
+END;
+--no need to  increment  a variable 
+
