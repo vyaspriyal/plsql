@@ -1,0 +1,85 @@
+--------
+TABLE
+CREATE TABLE SH_AUDIT(
+    NEW_NAME VARCHAR(20),
+
+    OLD_NAME VARCHAR(20),
+    USER_NAME VARCHAR(20),
+    ENTRY_DATE VARCHAR(30),
+    OPERATION VARCHAR(30)
+);
+
+-----------------
+TRIGGER
+
+CREATE OR REPLACE TRIGGER BI
+BEFORE INSERT OR UPDATE OR DELETE ON SUPER
+FOR EACH ROW 
+ENABLE
+DECLARE
+V_USER VARCHAR2(20);
+V_DATE VARCHAR2(30);
+BEGIN 
+SELECT NAME,TO_CHAR(sysdate,'DD/MON/YYYY  HH24:MI:SS') INTO V_USER, V_DATE FROM EMPLOYEE;
+IF INSERTING THEN 
+INSERT INTO SH_AUDIT(NEW_NAME,OLD_NAME,USER_NAME,ENTRY_DATE,OPERATION)
+VALUES(:NEW.SH_NAME,NULL,V_USER,V_DATE,'INSERT');
+ELSIF DELETING THEN 
+INSERT INTO SH_AUDIT(NEW_NAME,OLD_NAME,USER_NAME,ENTRY_DATE,OPERATION)
+VALUES(NULL,:OLD.SH_NAME,V_USER,V_DATE,'DELETING');
+ELSIF UPDATING THEN 
+INSERT INTO SH_AUDIT(NEW_NAME,OLD_NAME,USER_NAME,ENTRY_DATE,OPERATION)
+VALUES(:NEW.SH_NAME,:OLD.SH_NAME,V_USER,V_DATE,'UPDATING');
+
+END IF;
+END
+------------------------------------
+HERE OLD AND NEW TAKE OLD AND NEW VALUE RESPECTIVELY FROM USER AND TABLE
+------------------------------------------------
+STATEMENTS
+
+
+
+INSERT INTO SUPER VALUES ('HELLO');
+SELECT * FROM SH_AUDIT;
+
+OUTPUT
+-----------------------------------------------------------------------
+NEW_NAME	OLD_NAME	USER_NAME	   ENTRY_DATE	         OPERATION
+HELLO        	NULL      PRIYAL  	03/APR/2022 15:34:17	   INSERT
+-----------------------------------------------------------------------
+
+
+UPDATE SUPER SET SH_NAME = 'CHANGE' WHERE SH_NAME = 'HELLO';
+
+OUTPUT
+-----------------------------------------------------------------------
+
+NEW_NAME	OLD_NAME	USER_NAME 	 ENTRY_DATE	          OPERATION
+HELLO        	NULL	   PRIYAL     03/APR/2022 15:34:17	   INSERT
+CHANGE	     HELLO	   PRIYAL 	 03/APR/2022 15:41:01	   UPDATING
+-----------------------------------------------------------------------
+
+DELETE FROM SUPER WHERE SH_NAME = 'CHANGE';
+OUTPUT
+-----------------------------------------------------------------------
+
+NEW_NAME	OLD_NAME	USER_NAME 	ENTRY_DATE	           OPERATION
+HELLO	      NULL      VYAS	   03/APR/2022 15:34:17	   INSERT
+NULL       CHANGE     VYAS	   03/APR/2022 15:49:22	   DELETING
+CHANGE	   HELLO	    VYAS     03/APR/2022 15:41:01    UPDATING
+
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
